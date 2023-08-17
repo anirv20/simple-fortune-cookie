@@ -15,7 +15,11 @@ jobs:
        # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Clone Git repository
         uses: actions/checkout@v3
+      - name: Build frontend
+        run: cd frontend && go build
       - name: Run frontend tests
-        run: cd frontend | go test
+        run: cd frontend && go test
+      - name: Build backend
+        run: cd backend && go build
       - name: Run backend tests
-        run: cd ../backend | go test
+        run: cd backend && go test
