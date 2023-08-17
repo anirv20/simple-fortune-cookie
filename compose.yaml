@@ -1,0 +1,14 @@
+services:
+  frontend:
+  # image: simple-fortune-cookie-backend:latest
+    build: ./frontend
+    ports:
+      - "8080:8080"
+    environment:
+      - BACKEND_DNS=backend
+
+  backend:
+  # image: simple-fortune-cookie-frontend:latest
+    build: ./backend
+    ports:
+      - "9000:9000"
