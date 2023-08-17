@@ -15,5 +15,5 @@ spec:
         run: backend
     spec:
       containers:
-        - image: ghcr.io/anirv20/simple-fortune-cookie-backend:pr-32
+        - image: ghcr.io/anirv20/simple-fortune-cookie-backend:latest
           name: backend
