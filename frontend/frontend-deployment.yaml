@@ -15,5 +15,5 @@ spec:
         run: frontend
     spec:
       containers:
-        - image: ghcr.io/anirv20/simple-fortune-cookie-frontend:pr-32
+        - image: ghcr.io/anirv20/simple-fortune-cookie-frontend:latest
           name: frontend
