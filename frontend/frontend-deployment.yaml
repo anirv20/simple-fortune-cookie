@@ -17,3 +17,8 @@ spec:
       containers:
         - image: ghcr.io/anirv20/simple-fortune-cookie-frontend:latest
           name: frontend
+          env:
+            - name: BACKEND_DNS
+              value: backend
+            - name: BACKEND_PORT
+              value: '9000'
