@@ -1,0 +1,21 @@
+name: CI
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go environment
+        uses: actions/setup-go@v4.1.0
+        with:
+          # The Go version to download (if necessary) and use. Supports semver spec and ranges. Be sure to enclose this option in single quotation marks.
+          go-version: '1.21.0'
+       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Clone Git repository
+        uses: actions/checkout@v3
+      - name: Run frontend tests
+        run: cd frontend | go test
+      - name: Run backend tests
+        run: cd ../backend | go test
