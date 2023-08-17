@@ -1,0 +1,107 @@
+name: CI
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+jobs:
+  clone:
+    name: Clone Git repository
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Upload Repo
+      uses: actions/upload-artifact@v3
+      with:
+        name: code
+        path: .
+  test-frontend:
+    name: Test frontend
+    runs-on: ubuntu-latest
+    needs: clone
+    steps:
+    - name: Download code
+      uses: actions/download-artifact@v3
+      with:
+        name: code
+        path: .
+    - name: Setup Go environment
+      uses: actions/setup-go@v4.1.0
+      with:
+        go-version: '1.21.0'
+    - name: Build frontend
+      run: cd frontend && go build
+    - name: Run frontend tests
+      run: cd frontend && go test
+  push-frontend-image:
+    name: Push frontend image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: test-frontend
+    steps:    
+    - name: Log in to the Container registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Extract metadata for Docker
+      id: meta
+      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend
+    - name: Build and push Docker image
+      uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+      with:
+        context: frontend
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+  test-backend:
+    name: Test backend
+    runs-on: ubuntu-latest
+    needs: clone
+    steps:
+    - name: Download code
+      uses: actions/download-artifact@v3
+      with:
+        name: code
+        path: .
+    - name: Setup Go environment
+      uses: actions/setup-go@v4.1.0
+      with:
+        go-version: '1.21.0'
+    - name: Build backend
+      run: cd backend && go build
+    - name: Run backend tests
+      run: cd backend && go test
+  push-backend-image:
+    name: Push backend image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: test-backend
+    steps:    
+    - name: Log in to the Container registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Extract metadata for Docker
+      id: meta
+      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend
+    - name: Build and push Docker image
+      uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+      with:
+        context: backend
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
