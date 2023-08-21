@@ -1,0 +1,27 @@
+name: CD
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+jobs:
+  clone:
+    name: Clone Git repository
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Upload Repo
+      uses: actions/upload-artifact@v3
+      with:
+        name: code
+        path: .
+  deploy:
+    name: Kubernetes deployment
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download code
+      uses: actions/download-artifact@v3
+      with:
+        name: code
+        path: .
+    - run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
+    - run: kubectl --kubeconfig kubeconfig apply -f kubernetes/
