@@ -17,3 +17,8 @@ spec:
       containers:
         - image: ghcr.io/anirv20/simple-fortune-cookie-backend:latest
           name: backend
+          env:
+            - name: REDIS_DNS
+              value: redis
+            - name: REDIS_PASSWORD
+              value: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
