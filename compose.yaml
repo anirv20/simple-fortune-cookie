@@ -12,3 +12,12 @@ services:
     build: ./backend
     ports:
       - "9000:9000"
+    environment:
+      - REDIS_DNS=redis
+
+  redis:
+    build: ./redis
+    ports:
+      - "6379:6379"
+    volumes: 
+      - cache:/data
